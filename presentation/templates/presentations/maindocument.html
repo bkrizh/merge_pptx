@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  {% include 'includes/head.html' %}
+  <style>
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+      grid-gap: 20px;
+    }
+
+    .card {
+      width: 100%;
+    }
+
+    .upload-form {
+      margin-top: 20px; /* Отступ сверху, чтобы форма была ниже хэдера */
+      margin-bottom: 40px; /* Отступ снизу, чтобы форма была отделена от карточек */
+    }
+
+    .document-list {
+      margin-top: 40px; /* Отступ сверху, чтобы разделить форму и список документов */
+    }
+
+    .custom-purple-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #4C1542;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .custom-purple-btn:hover {
+      background-color: rgb(255, 115, 0);
+    }
+
+    .custom-grey-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #5D6064;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .custom-grey-btn:hover {
+      background-color: rgb(255, 115, 0);
+    }
+
+    .custom-yellow-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #F3DB00;
+      color: black;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .custom-yellow-btn:hover {
+      background-color: rgb(255, 115, 0);
+    }
+    
+  </style>
+</head>
+<body>
+  <header>
+    {% include 'includes/header.html' %}
+    {% block title %}
+    <title>Формирование презентации | UnionPowerPoint </title>
+    {% endblock title %}
+  </header>
+  {% if error_message %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error_message|safe }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endif %}
+  {% if success_message %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ success_message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endif %}
+  <div class="container upload-form">
+    <h4 style="margin-bottom: 20px;">Формирование презентации</h4>
+    <form action="{% url 'powerpoint:merge' %}" method="post" onsubmit="return validateForm(this);">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="id_description">Задайте описание новой презентации:</label>
+        <input type="text" class="form-control" id="id_description" name="description" pattern="[a-zA-Zа-яА-Я0-9\-_\.\ ]+" title="Имя может содержать буквы (в верхнем и нижнем регистре), цифры, дефисы, пробелы, подчёркивания и точки." required>
+      </div>
+      <div class="form-group">
+        {{ form.presentations.label_tag }}
+        <div class="form-check">
+          {% for doc in form.presentations.field.queryset %}
+            <input type="checkbox" class="form-check-input" name="presentations" id="presentation_{{ doc.id }}" value="{{ doc.id }}">
+            <label class="form-check-label" for="presentation_{{ doc.id }}">{{ doc }}</label>
+            <a href="{% url 'powerpoint:document_preview' doc.id %}" target="_blank" style="margin-left: 10px; padding: 3px 6px; font-size: 12px;" class="custom-purple-btn btn-sm">Просмотреть</a>
+            <span style="margin-left: 20px;"><small class="text-body-secondary">Опубликована {{ doc.pub_date }}</small></span>
+            <br>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="form-group">
+        {{ form.sample_start.label_tag }}
+        <div class="form-check">
+          {% for doc in form.sample_start.field.queryset %}
+            <input type="checkbox" class="form-check-input" name="sample_start" id="sample_start_{{ doc.id }}" value="{{ doc.id }}">
+            <label class="form-check-label" for="sample_start_{{ doc.id }}">{{ doc }}</label>
+            <a href="{% url 'powerpoint:sample_preview' doc.id %}" target="_blank" style="margin-left: 10px; padding: 3px 6px; font-size: 12px;" class="custom-purple-btn btn-sm">Просмотреть</a>
+            <span style="margin-left: 20px;"><small class="text-body-secondary">Опубликована {{ doc.pub_date }}</small></span>
+            <br>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="form-group">
+        {{ form.sample_end.label_tag }}
+        <div class="form-check">
+          {% for doc in form.sample_end.field.queryset %}
+            <input type="checkbox" class="form-check-input" name="sample_end" id="sample_end_{{ doc.id }}" value="{{ doc.id }}">
+            <label class="form-check-label" for="sample_end_{{ doc.id }}">{{ doc }}</label>
+            <a href="{% url 'powerpoint:sample_preview' doc.id %}" target="_blank" style="margin-left: 10px; padding: 3px 6px; font-size: 12px;" class="custom-purple-btn btn-sm">Просмотреть</a>
+            <span style="margin-left: 20px;"><small class="text-body-secondary">Опубликована {{ doc.pub_date }}</small></span>
+            <br>
+          {% endfor %}
+        </div>
+      </div>
+      <button type="submit" id="submitButton" class="btn btn-primary">Сформировать</button>
+    </form>
+    <script>
+      function validateForm(form) {
+        if (!isValid(form)) {
+          event.preventDefault();
+          return false;
+        }
+        
+        disableButton(document.getElementById('submitButton'));
+        return true;
+      }
+      
+      function isValid(form) {
+        return true;
+      }
+      
+      function disableButton(button) {
+          button.style.pointerEvents = "none";
+          button.textContent = 'Сохранение...';
+          button.disabled = true;
+          button.form.submit();
+          return false;
+      }
+    </script>
+  </div>
+  <div class="container document-list">
+    <h4 style="margin-bottom: 20px;">Сформированные презентации</h4>
+    {% if page_obj %}
+      <div class="card-grid">
+        {% for document in page_obj %}
+          <div class="card text-center mb-3">
+            <div class="card-header bg-secondary text-light">{{ document.description }}</div>
+            <div class="card-body bg-dark">
+              <div><a href="{% url 'powerpoint:merge_preview' document.pk %}" target="_blank" class="custom-purple-btn btn-block">Просмотреть</a></div>
+              <div><a href="{% url 'powerpoint:merge_download' document.pk %}" class="custom-grey-btn btn-block mt-3">Скачать</a></div>
+              <div><a href="{% url 'powerpoint:merge_delete' document.pk %}" class="custom-yellow-btn btn-block mt-3">Удалить</a></div>
+            </div>
+            <div class="card-footer bg-secondary text-light">
+              <small class="text-body-secondary">Последнее обновление {{ document.pub_date }}</small>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <hr>
+      {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation" class="my-5">
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+              <li class="page-item"><a class="page-link" href="?page=1">Первая</a></li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+              </li>
+            {% endif %}
+            {% for i in page_obj.paginator.page_range %}
+              {% if page_obj.number == i %}
+                <li class="page-item active">
+                  <span class="page-link">{{ i }}</span>
+                </li>
+              {% else %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+    {% else %}
+      <p>Данные отсутствуют.</p>
+    {% endif %}
+  </div>
+</body>
+</html>

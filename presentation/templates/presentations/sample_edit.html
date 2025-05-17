@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  {% include 'includes/head.html' %}
+  <style>
+    .upload-form {
+      margin-top: 20px; /* Отступ сверху, чтобы форма была ниже хэдера */
+      margin-bottom: 40px; /* Отступ снизу, чтобы форма была отделена от карточек */
+    }
+
+    .file-info {
+      margin-top: 10px; /* Отступ сверху для информации о файле */
+    }
+
+    .file-input-container {
+      display: flex;
+      flex-direction: column; /* Обеспечивает вертикальное расположение подписи и поля */
+      align-items: flex-start;
+    }
+
+    .custom-file-label {
+      display: inline-block;
+      padding: 6px 12px;
+      margin: 0;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.42857143;
+      color: #333;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 5px; /* Отступ снизу для отделения от поля выбора файла */
+    }
+
+    #id_file {
+      display: none; /* Скрыть стандартное поле загрузки */
+    }
+  </style>
+</head>
+<body>
+  <header>
+    {% include 'includes/header.html' %}
+    {% block title %}
+    <title>Редактирование шаблона | UnionPowerPoint </title>
+    {% endblock title %}
+  </header>
+  <div class="container upload-form">
+    <h4 style="margin-bottom: 20px;">Редактирование титульного шаблона для презентации</h4>
+    <form id="myForm" method="post" enctype="multipart/form-data" onsubmit="return validateForm(this);">
+      {% csrf_token %}
+      <div class="form-group file-input-container">
+        <!-- Подпись над полем выбора файла -->
+        <label for="id_file" class="custom-file-label" id="file-label">
+          {% if name %}
+            Выбранный файл: {{ name }}. Нажмите, если необходимо изменить файл.
+          {% else %}
+            Выберите файл
+          {% endif %}
+        </label>
+        <!-- Скрытое поле выбора файла -->
+        <input type="file" id="id_file" name="file" accept=".pptx" onchange="updateFileName();">
+      </div>
+      <div class="form-group">
+        <label for="id_description">Задайте новое описание титульного листа:</label>
+        <input type="text" class="form-control" id="id_description" name="description" value="{{ document.description }}" pattern="[a-zA-Zа-яА-Я0-9\-_\.\ ]+" title="Имя может содержать буквы (в верхнем и нижнем регистре), цифры, дефисы, пробелы, подчёркивания и точки." required>
+      </div>
+      <button type="submit" id="submitButton" class="btn btn-primary">Сохранить</button>
+    </form>
+    <script>
+      function updateFileName() {
+        var input = document.getElementById('id_file');
+        var fileName = input.files.length ? input.files[0].name : '{{ name }}';
+        document.getElementById('file-label').textContent = fileName ? 'Выбранный файл: ' + fileName : 'Выберите файл';
+      }
+      
+      function validateForm(form) {
+        if (!isValid(form)) {
+          event.preventDefault();
+          return false;
+        }
+        
+        disableButton(document.getElementById('submitButton'));
+        return true;
+      }
+      
+      function isValid(form) {
+        // Add validation logic if needed
+        return true;
+      }
+      
+      function disableButton(button) {
+        button.style.pointerEvents = "none";
+        button.textContent = 'Сохранение...';
+        button.disabled = true;
+        return false;
+      }
+    </script>
+  </div>
+</body>
+</html>

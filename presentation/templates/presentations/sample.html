@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  {% include 'includes/head.html' %}
+  <style>
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+      grid-gap: 20px;
+    }
+
+    .card {
+      width: 100%;
+    }
+
+    .upload-form {
+      margin-top: 20px; /* Отступ сверху, чтобы форма была ниже хэдера */
+      margin-bottom: 40px; /* Отступ снизу, чтобы форма была отделена от карточек */
+    }
+
+    .document-list {
+      margin-top: 20px; /* Отступ сверху, чтобы разделить форму и список документов */
+    }
+
+    .custom-purple-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #4C1542;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .custom-purple-btn:hover {
+      background-color: rgb(255, 115, 0);
+    }
+
+    .custom-grey-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #5D6064;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .custom-grey-btn:hover {
+      background-color: rgb(255, 115, 0);
+    }
+
+    .custom-white-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #F3DB00;
+      color: black;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .custom-white-btn:hover {
+      background-color: rgb(255, 115, 0);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    {% include 'includes/header.html' %}
+    {% block title %}
+    <title>Титульные шаблоны | UnionPowerPoint </title>
+    {% endblock title %}
+  </header>
+  {% if error_message %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error_message|safe }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endif %}
+  {% if success_message %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ success_message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endif %}
+<div class="container document-list">
+  <h4 style="margin-bottom: 20px;">Титульные шаблоны</h4>
+  {% if page_obj %}
+    <div class="card-grid">
+      {% for document in page_obj %}
+        <div class="card text-center mb-3">
+          <div class="card-header bg-secondary text-light">{{ document.description }}</div>
+          <div class="card-body bg-dark">
+            <div><a href="{% url 'powerpoint:sample_preview' document.pk %}" target="_blank" class="custom-purple-btn btn-block">Просмотреть</a></div>
+            <div><a href="{% url 'powerpoint:sample_download' document.pk %}" class="custom-grey-btn btn-block mt-3">Скачать</a></div>
+            <div><a href="{% url 'powerpoint:sample_edit' document.pk %}" class="custom-white-btn btn-block mt-3">Изменить</a></div>
+          </div>
+          <div class="card-footer bg-secondary text-light">
+            <small class="text-body-secondary">Последнее обновление {{ document.pub_date }}</small>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <hr>
+    {% if page_obj.has_other_pages %}
+      <nav aria-label="Page navigation" class="my-5">
+        <ul class="pagination">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1">Первая</a></li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+            </li>
+          {% endif %}
+          {% for i in page_obj.paginator.page_range %}
+            {% if page_obj.number == i %}
+              <li class="page-item active">
+                <span class="page-link">{{ i }}</span>
+              </li>
+            {% else %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  {% else %}
+    <p>Данные отсутствуют.</p>
+  {% endif %}
+</div>
+</body>
+</html>

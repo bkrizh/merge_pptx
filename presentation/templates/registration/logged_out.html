@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  {% include 'includes/head.html' %}
+  {% load static %}
+  <style>
+    .card {
+  background-color: #f2f2f2; /* Замените #f2f2f2 на нужный вам цвет */
+  border: 1px solid #ccc; /* Добавление границы для отображения элемента */
+}
+
+/* Изменение цвета для .card-header */
+.card-header {
+  background-color: #356; /* Замените #333 на нужный вам цвет */
+  color: #fff; /* Изменение цвета текста внутри .card-header */
+}
+html, body {
+      height: 100%;
+      margin: 0;
+    }
+body {
+  display: flex;
+  flex-direction: column;
+  background-size: cover;
+}
+main {
+      flex: 1; /* Главный контент растягивается на оставшееся пространство */
+    }
+  </style>
+</head>
+<body>
+<div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 p-5">
+        <div class="card">
+          <div class="card-header text-dark">
+            Выход
+          </div>
+          <div class="card-body">
+            Вы вышли из своей учётной записи.
+          </div> <!-- card body -->
+        </div> <!-- card -->
+      </div> <!-- col -->
+  </div> <!-- row -->
+</div>
+</body>
+</html>

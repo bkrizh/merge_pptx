@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  {% load static %}
+  {% include 'includes/head.html' %}
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background-size: cover; /* Изменил для лучшего отображения */
+    }
+
+    main {
+      flex: 1; /* Главный контент растягивается на оставшееся пространство */
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem; /* Размер шрифта для авторских прав */
+      padding: 10px;
+      background-color: white; /* Белая табличка */
+      border-radius: 5px; /* Скругленные углы для таблички */
+      margin: 10px auto; /* Центрирование */
+      width: fit-content; /* Ширина таблички по содержимому */
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Легкая тень для таблички */
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- Здесь разместите содержимое вашей шапки сайта -->
+    {% include 'includes/header.html' %}
+    {% block title %}
+    <title>Главная страница | UnionPowerPoint</title>
+    {% endblock title %}
+  </header>
+  <main>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col p-2">
+          <div class="card">
+            <div class="card-header" align="center">
+              Конструктор презентаций UnionPowerPoint v1.0
+            </div>
+            <div class="card-body">
+              <p>Добро пожаловать на главную страницу!</p>
+            </div> <!-- card body -->
+          </div> <!-- card -->
+        </div> <!-- col -->
+      </div> <!-- row -->
+    </div> <!-- container -->
+  </main>
+  <footer>
+    Разработчик проекта - Борис Крижевский.
+  </footer>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  {% include 'includes/head.html' %}
+  <style>
+    .slide {
+      margin-bottom: 20px;
+    }
+    .slide img {
+      max-width: 100%;
+      height: auto;
+    }
+    .header-container {
+            display: flex;
+            align-items: center;
+            margin-top: 20px; /* Отступ сверху для разделения хедера и контента */
+            margin-bottom: 20px; /* Отступ снизу для разделения заголовка и контента */
+        }
+        .header-container h2 {
+            margin: 0;
+            font-size: 24px; /* Убедитесь, что размер шрифта соответствует вашим требованиям */
+        }
+        .header-container .btn {
+            margin-left: 20px; /* Отступ между заголовком и кнопкой */
+        }
+  </style>
+</head>
+<body>
+  <header>
+    {% include 'includes/header.html' %}
+    {% block title %}
+    <title>Предпросмотр сформированной презентации | UnionPowerPoint</title>
+    {% endblock title %}
+  </header>
+  <div class="container">
+    <div class="header-container">
+      <h2>Предпросмотр сформированной презентации: {{ document.description }}</h2>
+      <a href="{% url 'powerpoint:merge' %}" class="btn btn-primary">Назад</a>
+  </div>
+    <div class="slides">
+      {% for slide in slides %}
+        <div class="slide">
+          <h3>Слайд {{ slide.number }}</h3>
+          <img src="{{ slide.image }}" alt="Слайд {{ slide.number }}">
+        </div>
+      {% endfor %}
+    </div>
+    <a href="{% url 'powerpoint:merge' %}" class="btn btn-primary">Назад</a>
+  </div>
+</body>
+</html>

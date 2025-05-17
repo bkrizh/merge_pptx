@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  {% include 'includes/head.html' %}
+  {% load static %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<style>
+  .navbar .nav-link {
+  color: #000; /* Цвет для обычного состояния */
+}
+
+.navbar .nav-link.active {
+  color: #fff !important; /* Цвет для активного состояния */
+  background-color: black !important; /* Цвет фона для активного состояния */
+  border-radius: 0.25rem; /* Радиус скругления для фона (по желанию) */
+}
+</style>
+
+
+<div class="container-fluid p-0">
+        <header class="navbar d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom" style="background-color: #ffd600">
+          <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
+            {% load static %}
+            <span style="color: darkslategrey; font-family: 'CourierNew', monospace; font-size: rem; font-weight: bold; padding-left: 7px;" class="fs-4">UnionPowerPoint v1.0</span>
+          </a>
+
+          {% if request.user.is_superuser or request.user.role == 'admin' %}
+          {% with request.resolver_match.view_name as view_name %}
+            <ul class="col-12 col-md-auto mb-2 justify-content-center mb-md-0 nav nav-pills">
+              <li class="nav-item"><a class="nav-link {% if view_name  == 'powerpoint:index' %}active{% endif %}" href="{% url 'powerpoint:index' %}">Главная</a></li>
+              <li class="nav-item"><a class="nav-link {% if view_name  == 'powerpoint:document' %}active{% endif %}" href="{% url 'powerpoint:document' %}">Списки</a></li>
+              <li class="nav-item"><a class="nav-link {% if view_name  == 'powerpoint:merge' %}active{% endif %}" href="{% url 'powerpoint:merge' %}">Формирование</a></li>
+              <li class="nav-item"><a class="nav-link {% if view_name  == 'powerpoint:sample' %}active{% endif %}" href="{% url 'powerpoint:sample' %}">Шаблоны</a></li>
+            </ul>
+      
+            <ul class="nav nav-pills text-end">
+              <li class="nav-item">
+                <form action="{% url 'users:logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link {% if view_name == 'users:logged_out' %}active{% endif %}" style="background:none; border:none; padding:0; cursor:pointer; margin-right: 10px;">
+                        Выйти
+                    </button>
+                </form>
+            </li>            
+            </ul>
+            {% endwith %}
+            {% endif %}
+
+        {% if request.user.role == 'empty' and not request.user.is_superuser %}
+        {% with request.resolver_match.view_name as view_name %}
+          <ul class="col-12 col-md-auto mb-2 justify-content-center mb-md-0 nav nav-pills">
+            <li class="nav-item"><a class="nav-link {% if view_name  == 'powerpoint:index' %}active{% endif %}" href="{% url 'powerpoint:index' %}">Главная</a></li>
+            <li class="nav-item"><a class="nav-link {% if view_name  == 'powerpoint:document' %}active{% endif %}" href="{% url 'powerpoint:document' %}">Спиcки</a></li>
+            <li class="nav-item"><a class="nav-link {% if view_name  == 'powerpoint:sample' %}active{% endif %}" href="{% url 'powerpoint:sample' %}">Шаблоны</a></li>
+          </ul>
+    
+          <ul class="nav nav-pills text-end">
+            <li class="nav-item">
+              <form action="{% url 'users:logout' %}" method="post" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="nav-link {% if view_name == 'users:logged_out' %}active{% endif %}" style="background:none; border:none; padding:0; cursor:pointer; margin-right: 10px;">
+                      Выйти
+                  </button>
+              </form>
+          </li>            
+          </ul>
+          {% endwith %}
+        {% endif %}
+
+{% if not request.user.is_authenticated  %}
+{% with request.resolver_match.view_name as view_name %}
+  <ul class="col-12 col-md-auto justify-content-center mb-md-0 nav nav-pills">
+    <li class="nav-item"><a class="nav-link {% if view_name == 'powerpoint:index' %}active{% endif %}" href="{% url 'powerpoint:index' %}">Главная</a></li>
+  </ul>
+
+  <ul class="nav nav-pills text-end">
+    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'users:login' %}">Вход</a></li>
+  </ul>
+{% endwith %}
+{% endif %}
+</header>
+</div>
+</html>
